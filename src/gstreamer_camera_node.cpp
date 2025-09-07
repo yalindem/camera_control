@@ -13,7 +13,7 @@ public:
         pub_ = this->create_publisher<sensor_msgs::msg::Image>("/camera/image_raw", 10);
 
         // GStreamer pipeline
-        cap_.open("v4l2src exposure=20 ! video/x-raw,format=YUY2,width=640,height=480 ! videoconvert ! appsink", cv::CAP_GSTREAMER);
+        cap_.open("v4l2src ! video/x-raw,format=YUY2,width=640,height=480 ! videoconvert ! appsink", cv::CAP_GSTREAMER);
         if (!cap_.isOpened()) {
             RCLCPP_ERROR(this->get_logger(), "Kamera cannot open!");
             rclcpp::shutdown();
