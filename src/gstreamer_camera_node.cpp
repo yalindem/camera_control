@@ -23,7 +23,7 @@ public:
             std::chrono::milliseconds(66),
             std::bind(&GStreamerCameraNode::publish_frame, this));
     }
-
+test
 private:
     void publish_frame()
     {
