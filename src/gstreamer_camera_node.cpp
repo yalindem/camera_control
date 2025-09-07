@@ -13,15 +13,14 @@ public:
         pub_ = this->create_publisher<sensor_msgs::msg::Image>("/camera/image_raw", 10);
 
         // GStreamer pipeline
-        cap_.open("v4l2src ! video/x-raw,format=YUY2,width=640,height=480 ! videoconvert ! appsink", cv::CAP_GSTREAMER);
+        cap_.open("v4l2src exposure=20 ! video/x-raw,format=YUY2,width=640,height=480 ! videoconvert ! appsink", cv::CAP_GSTREAMER);
         if (!cap_.isOpened()) {
             RCLCPP_ERROR(this->get_logger(), "Kamera cannot open!");
             rclcpp::shutdown();
             return;
         }
-        // Timer ile düzenli frame alma
         timer_ = this->create_wall_timer(
-            std::chrono::milliseconds(66),  // ~30 FPS
+            std::chrono::milliseconds(66),
             std::bind(&GStreamerCameraNode::publish_frame, this));
     }
 
@@ -33,6 +32,8 @@ private:
             RCLCPP_WARN(this->get_logger(), "Frame cannot be taken!");
             return;
         }
+        //cap_.set(cv::CAP_PROP_AUTO_EXPOSURE, 0.25);
+        //cap_.set(cv::CAP_PROP_EXPOSURE, 1000); 
 
         auto msg = cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", frame).toImageMsg();
         pub_->publish(*msg);
